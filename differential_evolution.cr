@@ -47,10 +47,8 @@ generations.times do |g|
   mutate = rand(mutate_range)
 
   pop_size.times do |i|
-
     # Get three others
     others = Array.new(3) { rand(pop_size - 1) }
-
     x0 = pop[others[0]].xs
     x1 = pop[others[1]].xs
     x2 = pop[others[2]].xs
@@ -64,7 +62,6 @@ generations.times do |g|
 
     # Create trial
     params.times { |j| trial.xs[j] = rand < crossover ? donor.xs[j] : xt.xs[j] }
-
     trial.calculate_score()
     
     pop[i] = Agent.new(trial) if trial.score < xt.score
