@@ -56,8 +56,6 @@ generations.times do |g|
 
     # Create donor
     params.times { |j| donor.xs[j] = x0[j] + (x1[j] - x2[j]) * mutate }
-
-    # Limit bounds
     params.times { |j| donor.xs[j].clamp(bounds) }
 
     # Create trial
