@@ -27,9 +27,9 @@ class Agent
   end
 end
 
-params = 100
+params = 600
 bounds = -10.0..10.0
-generations = 1000
+generations = 5000
 print = 100
 pop_size = 200
 mutate_range = 0.2..0.95
@@ -55,8 +55,7 @@ generations.times do |g|
     xt = pop[i]
 
     # Create donor
-    params.times { |j| donor.xs[j] = x0[j] + (x1[j] - x2[j]) * mutate }
-    params.times { |j| donor.xs[j].clamp(bounds) }
+    params.times { |j| donor.xs[j] = (x0[j] + (x1[j] - x2[j]) * mutate).clamp(bounds) }
 
     # Create trial
     params.times { |j| trial.xs[j] = rand < crossover ? donor.xs[j] : xt.xs[j] }
