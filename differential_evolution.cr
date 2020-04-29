@@ -1,10 +1,10 @@
 class Agent
-  property score : Float64
+  property score = Float64::MAX
   property xs : Array(Float64)
 
   def initialize(n : Int32, bounds : Range(Float64, Float64))
     @xs = Array.new(n) { rand(bounds) }
-    @score = calculate_score()
+    calculate_score()
   end
 
   def initialize(a : Agent)
