@@ -27,9 +27,9 @@ class Agent
   end
 end
 
-params = 600
+params = 300
 bounds = -10.0..10.0
-generations = 5000
+generations = 10000
 print = 100
 pop_size = 200
 mutate_range = 0.2..0.95
@@ -38,9 +38,12 @@ crossover_range = 0.1..1.0
 crossover = 0.9
 mutate = 0.4
 
+others = Array.new(3, 0)
 donor = Agent.new(params, bounds)
 trial = Agent.new(params, bounds)
 pop = Array.new(pop_size) { Agent.new(params, bounds) }
+
+start_dt = Time.utc
 
 generations.times do |g|
   crossover = rand(crossover_range)
@@ -48,7 +51,7 @@ generations.times do |g|
 
   pop_size.times do |i|
     # Get three others
-    others = Array.new(3) { rand(pop_size - 1) }
+    3.times { |i| others[i] = rand(pop_size - 1) }
     x0 = pop[others[0]].xs
     x1 = pop[others[1]].xs
     x2 = pop[others[2]].xs
@@ -72,3 +75,6 @@ generations.times do |g|
     #puts "BEST #{best.xs}"
   end
 end
+
+end_dt = Time.utc
+puts end_dt - start_dt
