@@ -30,7 +30,7 @@ end
 params = 300
 bounds = -10.0..10.0
 generations = 10000
-print = 100
+print = 1000
 pop_size = 200
 mutate_range = 0.2..0.95
 crossover_range = 0.1..1.0
@@ -51,7 +51,7 @@ generations.times do |g|
 
   pop_size.times do |i|
     # Get three others
-    3.times { |i| others[i] = rand(pop_size - 1) }
+    3.times { |j| others[j] = rand(pop_size - 1) }
     x0 = pop[others[0]].xs
     x1 = pop[others[1]].xs
     x2 = pop[others[2]].xs
