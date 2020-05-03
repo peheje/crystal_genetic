@@ -15,7 +15,7 @@ class Agent
   def calculate_score()
     # f(0) = 0, n params
     s = 0.0
-    xs.size.times { |i| s += xs[i] * xs[i] }
+    xs.size.times { |i| s += xs[i] ** 2 }
     @score = s
   end
 
@@ -26,6 +26,8 @@ class Agent
     @score = t1 + t2
   end
 end
+
+start_dt = Time.utc
 
 params = 300
 bounds = -10.0..10.0
@@ -38,12 +40,9 @@ crossover_range = 0.1..1.0
 crossover = 0.9
 mutate = 0.4
 
-others = Array.new(3, 0)
 donor = Agent.new(params, bounds)
 trial = Agent.new(params, bounds)
 pop = Array.new(pop_size) { Agent.new(params, bounds) }
-
-start_dt = Time.utc
 
 generations.times do |g|
   crossover = rand(crossover_range)
@@ -51,10 +50,9 @@ generations.times do |g|
 
   pop_size.times do |i|
     # Get three others
-    3.times { |j| others[j] = rand(pop_size - 1) }
-    x0 = pop[others[0]].xs
-    x1 = pop[others[1]].xs
-    x2 = pop[others[2]].xs
+    x0 = pop[rand(pop_size - 1)].xs
+    x1 = pop[rand(pop_size - 1)].xs
+    x2 = pop[rand(pop_size - 1)].xs
     xt = pop[i]
 
     # Create donor
