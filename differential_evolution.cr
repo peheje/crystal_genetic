@@ -1,33 +1,9 @@
-class Agent
-  property score = Float64::MAX
-  property xs : Array(Float64)
-
-  def initialize(n : Int32, bounds : Range(Float64, Float64))
-    @xs = Array.new(n) { rand(bounds) }
-    calculate_score()
-  end
-
-  def initialize(a : Agent)
-    @xs = a.xs.clone
-    @score = a.@score
-  end
-
-  def calculate_score()
-    # f(0) = 0, n params
-    s = 0.0
-    xs.size.times { |i| s += xs[i] ** 2 }
-    @score = s
-  end
-
-  def booth()
-    # f(1.0,3.0) = 0, 2 params
-    t1 = (xs[0] + 2*xs[1] - 7.0) ** 2
-    t2 = (2*xs[0] + xs[1] - 5.0) ** 2
-    @score = t1 + t2
-  end
+def calculate_score(xs : Array(Float64))
+  # f(0) = 0, n params
+  s = 0.0
+  xs.size.times { |i| s += xs[i] * xs[i] }
+  s
 end
-
-start_dt = Time.utc
 
 params = 300
 bounds = -10.0..10.0
@@ -40,34 +16,51 @@ crossover_range = 0.1..1.0
 crossover = 0.9
 mutate = 0.4
 
-donor = Agent.new(params, bounds)
-trial = Agent.new(params, bounds)
-pop = Array.new(pop_size) { Agent.new(params, bounds) }
+others = Array.new(3, 0)
+donor = Array.new(params, 0.0)
+trial = Array.new(params, 0.0)
+pop = Array.new(pop_size) { Array.new(params, 0.0) }
+scores = Array.new(pop_size, 0.0)
 
+start_dt = Time.utc
+
+# Init pop
+pop_size.times do |i|
+  params.times do |j|
+    pop[i][j] = rand(bounds)
+  end
+  scores[i] = calculate_score(pop[i])
+end
+
+# Run generations
 generations.times do |g|
   crossover = rand(crossover_range)
   mutate = rand(mutate_range)
 
   pop_size.times do |i|
     # Get three others
-    x0 = pop[rand(pop_size - 1)].xs
-    x1 = pop[rand(pop_size - 1)].xs
-    x2 = pop[rand(pop_size - 1)].xs
+    3.times { |j| others[j] = rand(pop_size - 1) }
+    x0 = pop[others[0]]
+    x1 = pop[others[1]]
+    x2 = pop[others[2]]
     xt = pop[i]
 
     # Create donor
-    params.times { |j| donor.xs[j] = (x0[j] + (x1[j] - x2[j]) * mutate).clamp(bounds) }
+    params.times { |j| donor[j] = (x0[j] + (x1[j] - x2[j]) * mutate).clamp(bounds) }
 
     # Create trial
-    params.times { |j| trial.xs[j] = rand < crossover ? donor.xs[j] : xt.xs[j] }
-    trial.calculate_score()
+    params.times { |j| trial[j] = rand < crossover ? donor[j] : xt[j] }
+    trial_score = calculate_score(trial)
     
-    pop[i] = Agent.new(trial) if trial.score < xt.score
+    if trial_score < scores[i]
+      pop[i] = trial.dup
+      scores[i] = trial_score
+    end
   end
 
   if g.remainder(print) == 0
-    mean = pop.map { |x| x.score }.sum / pop_size
-    best = pop.min_by { |x| x.score }
+    mean = scores.sum / pop_size
+    #best = scores.min
     puts "GEN #{g}"
     puts "MEAN #{mean}"
     #puts "BEST #{best.xs}"
