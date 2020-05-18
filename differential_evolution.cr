@@ -5,64 +5,37 @@ def calculate_score(xs : Array(Float64))
   s
 end
 
-params = 300
+start_dt = Time.utc
+
+params = 100
 bounds = -10.0..10.0
-generations = 10000
-print = 1000
-pop_size = 200
+generations = 1000
+print_each = 100
+pop_size = 100
 mutate_range = 0.2..0.95
 crossover_range = 0.1..1.0
-
 crossover = 0.9
 mutate = 0.4
 
-others = Array.new(3, 0)
-donor = Array.new(params, 0.0)
 trial = Array.new(params, 0.0)
-pop = Array.new(pop_size) { Array.new(params, 0.0) }
-scores = Array.new(pop_size, 0.0)
+pop = Array.new(pop_size) { Array.new(params) { rand(bounds) } }
+scores = Array.new(pop_size) { |i| calculate_score(pop[i]) }
 
-start_dt = Time.utc
-
-# Init pop
-pop_size.times do |i|
-  params.times do |j|
-    pop[i][j] = rand(bounds)
-  end
-  scores[i] = calculate_score(pop[i])
-end
-
-# Run generations
 generations.times do |g|
-  crossover = rand(crossover_range)
-  mutate = rand(mutate_range)
+  crossover, mutate = rand(crossover_range), rand(mutate_range)
 
   pop_size.times do |i|
-    # Get three others
-    3.times { |j| others[j] = rand(pop_size - 1) }
-    x0 = pop[others[0]]
-    x1 = pop[others[1]]
-    x2 = pop[others[2]]
-    xt = pop[i]
-
-    # Create donor
-    params.times { |j| donor[j] = (x0[j] + (x1[j] - x2[j]) * mutate).clamp(bounds) }
-
-    # Create trial
-    params.times { |j| trial[j] = rand < crossover ? donor[j] : xt[j] }
+    x0, x1, x2, xt = pop.sample, pop.sample, pop.sample, pop[i]
+    params.times { |j| trial[j] = rand < crossover ? (x0[j] + (x1[j] - x2[j]) * mutate).clamp(bounds) : xt[j] }
     trial_score = calculate_score(trial)
-    
-    if trial_score < scores[i]
-      pop[i] = trial.dup
-      scores[i] = trial_score
-    end
+    pop[i], scores[i] = trial.dup, trial_score if trial_score < scores[i]
   end
 
-  if g.remainder(print) == 0
+  if g.remainder(print_each) == 0
     mean = scores.sum / pop_size
-    #best = scores.min
     puts "GEN #{g}"
     puts "MEAN #{mean}"
+    #best = scores.min
     #puts "BEST #{best.xs}"
   end
 end
