@@ -1,7 +1,6 @@
 def calculate_score(xs : Array(Float64))
-  # f(0) = 0, n params
   s = 0.0
-  xs.size.times { |i| s += xs[i] * xs[i] }
+  xs.size.times { |i| s += xs[i] * xs[i] } # f(0) = 0, n params
   s
 end
 
