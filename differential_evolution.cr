@@ -1,8 +1,6 @@
 def calculate_score(xs : Array(Float64))
   # f(0) = 0, n params
-  s = 0.0
-  xs.size.times { |i| s += xs[i] * xs[i] }
-  s
+  xs.sum { |x| x**2 }
 end
 
 start_dt = Time.utc
@@ -19,7 +17,7 @@ mutate = 0.4
 
 trial = Array.new(params, 0.0)
 pop = Array.new(pop_size) { Array.new(params) { rand(bounds) } }
-scores = Array.new(pop_size) { |i| calculate_score(pop[i]) }
+scores = pop.map { |xs| calculate_score(xs) }
 
 generations.times do |g|
   crossover, mutate = rand(crossover_range), rand(mutate_range)
