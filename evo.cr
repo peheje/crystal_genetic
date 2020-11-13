@@ -1,3 +1,5 @@
+# crystal build evo.cr --release
+
 def calculate_score(xs : Array(Float64))
   # f(0) = 0, n params
   xs.sum { |x| x**2 }
