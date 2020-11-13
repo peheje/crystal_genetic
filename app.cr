@@ -4,7 +4,7 @@ def generate_data()
     file1 = File.new "ids1.data", "w"
     file2 = File.new "ids2.data", "w"
 
-    1_000.times do
+    10_000_000.times do
         id1 = UUID.random
         file1.puts id1
 
@@ -43,15 +43,26 @@ end
 # puts in_both(["a", "b", "c"], ["a", "c"].to_set)
 # puts in_only_first(["a", "b", "c", "d"], ["a", "b", "c"].to_set)
 
+start_dt = Time.utc
+
 a = File.read_lines("ids1.data")
 a_set = a.to_set
 
 b = File.read_lines("ids2.data")
 b_set = b.to_set
 
+end_dt = Time.utc
+puts end_dt - start_dt
+
+start_dt = Time.utc
+
 a_and_b = in_both(a, b_set)
 only_a = in_only_first(a, b_set)
 only_b = in_only_first(b, a_set)
+
 puts "both #{a_and_b.size}"
 puts "only a #{only_a.size}"
 puts "only b #{only_b.size}"
+
+end_dt = Time.utc
+puts end_dt - start_dt
