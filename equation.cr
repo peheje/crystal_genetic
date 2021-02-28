@@ -52,12 +52,8 @@ def random_node(ops : Array(Op), leaf : Bool)
   end
 end
 
-def random_tree(ops : Array(Op), wrappedNode : NodeWrapper)
-  puts "random tree 1"
-  puts wrappedNode.node
-  wrappedNode.setNode random_node(ops, false)
-  puts "random tree 2"
-  puts wrappedNode.node
+def random_tree(ops : Array(Op), max : Int, counter : Int = 0)
+  node = random_node ops false
 end
 
 ops = Array(Op).new
@@ -73,7 +69,7 @@ n = random_node(ops, false)
 puts "main 1"
 puts n.inspect
 
-random_tree(ops, NodeWrapper.new n)
+random_tree ops 2
 
 puts "main 2"
 puts n.inspect
